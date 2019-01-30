@@ -8,7 +8,7 @@ comment: |
 ---
 modules:
   - docassemble.base.util
-  - .legal_server
+  - docassemble.gbls.legal_server
 ---
 objects:
   - client: Individual

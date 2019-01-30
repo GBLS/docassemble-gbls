@@ -45,7 +45,7 @@ def find_package_data(where='.', package='', exclude=standard_exclude, exclude_d
     return out
 
 setup(name='docassemble.gbls',
-      version='0.0.3',
+      version='0.0.4',
       description=('Contains Legal Server integration, basic skeleton for interviews used at Greater Boston Legal Services'),
       long_description='# GBLS Module\r\n\r\nThis package is the beginning of a collection of standard includes for Greater\r\nBoston Legal Services.\r\n\r\nIt provides `basic-questions-gbls.yml` and `legal_server.py`, which\r\ncreates some standard objects and fills in their variables with data from\r\nLegal Server, when launched from Legal Server.\r\n\r\nAttributes that are filled in include name, address, email, and phone number, using the\r\nstandard Individual attribute names.\r\n\r\nTo use (and add the objects `client`, `advocate`, and `adverse_parties`) \r\ninclude `docassemble.gbls:basic-questions-gbls.yml`\r\n\r\nE.g., when you include `docassemble.gbls.basic-questions-gbls.yml`, you will have\r\nthe following attributes available to you:\r\n\r\n* client\r\n* client.full_name()\r\n* client.name.first / client.name.middle / client.name.last / client.name.suffix\r\n* client.address.address, client.address.zip, etc / client.address_block()\r\n* client.phone_number\r\n* client.mobile_number\r\n* client.email\r\n* client.birth_date\r\n\r\nName fields and email will also be available for `advocate`. adverse_parties will\r\nbe a DAList of Persons, with adverse_party[i].name.text and adverse_party[i].full_name()\r\navailable. Address of adverse parties is not parsed.',
       long_description_content_type='text/markdown',
