@@ -11,19 +11,28 @@ class LegalServerFields(DADict):
         super(LegalServerFields, self).init(*pargs, **kwargs)
         self.auto_gather = False
         self.gathered = True
-        if hasattr(self, 'url_args'):
+        if hasattr(self, 'url_args') and self.url_args.get('args',False):
             self.initialize(self.url_args)
+        else:
+            self.empty_args = True
 
     def initialize(self, url_args):
         """Load URL args and any objects that may have been passed to .using or set as attributes on the LegalServerFields object"""
         # We expect that the 'args' URL parameter will be a base64 encoded JSON object
-        ls_args = from_b64_json(url_args.get('args',None))
-        if ls_args is None:
-            ls_args = dict()
+        if not url_args.get('args',False):
+            return
+        else:
+            ls_args = from_b64_json(url_args.get('args',None))
+        
+        #if ls_args is None:
+            # self.elements = dict()
+        #    return # Don't do anything if we didn't get a URL args argument
         self.elements = ls_args
 
-        self.client_name_parts = HumanName(ls_args.get('name',''))
-        self.advocate_name_parts = HumanName(ls_args.get('sidebar_advocate',''))
+        if ls_args.get('name',False):
+            self.client_name_parts = HumanName(ls_args.get('name',''))
+        if ls_args.get('sidebar_advocate',False):
+            self.advocate_name_parts = HumanName(ls_args.get('sidebar_advocate',''))
         if hasattr(self,'client'):
             self.load_client(self.client)
         if hasattr(self,'advocate'):
@@ -33,12 +42,15 @@ class LegalServerFields(DADict):
 
     def load_client(self,client):
         """Loads up the Individual object (e.g., client) with fields from Legal Server. Fills in birthdate, name, email, and address attributes"""
-        client.name.first = self.client_name_parts['first']
-        client.name.last = self.client_name_parts['last']
-        client.name.suffix = self.client_name_parts['suffix']
-        client.name.middle = self.client_name_parts['middle']
-        client.address.address = self.elements.get('full_address','')
-        client.address.geolocate(self.elements.get('full_address',''))
+        try:
+            client.name.first = self.client_name_parts['first']
+            client.name.last = self.client_name_parts['last']
+            client.name.suffix = self.client_name_parts['suffix']
+            client.name.middle = self.client_name_parts['middle']
+            client.address.address = self.elements.get('full_address','')
+            client.address.geolocate(self.elements.get('full_address',''))
+        except:
+            pass
         if self.elements.get('date_of_birth', False):
             client.birthdate = as_datetime(self.elements.get('date_of_birth'))
         client.email = self.elements.get('sidebar_email','')
@@ -47,10 +59,13 @@ class LegalServerFields(DADict):
 
     def load_advocate(self, advocate):
         """Loads up the Individual object (e.g., advocate) with fields from Legal Server. Fills in name and email address attributes"""
-        advocate.name.first = self.advocate_name_parts['first']
-        advocate.name.last = self.advocate_name_parts['last']
-        advocate.name.middle = self.advocate_name_parts['middle']
-        advocate.name.suffix = self.advocate_name_parts['suffix']
+        try:
+            advocate.name.first = self.advocate_name_parts['first']
+            advocate.name.last = self.advocate_name_parts['last']
+            advocate.name.middle = self.advocate_name_parts['middle']
+            advocate.name.suffix = self.advocate_name_parts['suffix']
+        except:
+            pass
         advocate.email = self.elements.get('initiating_user_email_address')
 
     def load_adverse_parties(self,adverse_parties):

@@ -24,24 +24,26 @@ mandatory: True
 code: |
   ls_fields
 ---
+generic object: Individual
 question: |
-  Client Name
+  ${x.possessive('name')}
 fields:
-  - First name: client.name.first
-  - Middle name: client.name.middle
+  - First name: x.name.first
+  - Middle name: x.name.middle
     required: False
-  - Last name: client.name.last
+  - Last name: x.name.last
 ---
 question: |
-  Advocate Name
+  Advocate's Name
 fields:
   - First name: advocate.name.first
   - Middle name: advocate.name.middle
     required: False
   - Last name: advocate.name.last
 ---
+generic object: Individual
 question: |
-  Client's address
+  ${x.possessive('address')}
 fields:
   - address: client.address.address
     address autocomplete: True
@@ -66,3 +68,8 @@ question: |
 subquestion: |
   So far you've told us about ${adverse_parties}
 yesno: adverse_parties.there_is_another
+---
+generic object: Individual
+question: |
+  ${x.possessive('signature')}
+signature: x.signature
