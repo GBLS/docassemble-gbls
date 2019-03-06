@@ -8,7 +8,7 @@ comment: |
 ---
 modules:
   - docassemble.base.util
-  - docassemble.gbls.legal_server
+  - .legal_server
 ---
 objects:
   - client: Individual
@@ -33,29 +33,21 @@ fields:
     required: False
   - Last name: x.name.last
 ---
-question: |
-  Advocate's Name
-fields:
-  - First name: advocate.name.first
-  - Middle name: advocate.name.middle
-    required: False
-  - Last name: advocate.name.last
----
 generic object: Individual
 question: |
   ${x.possessive('address')}
 fields:
-  - address: client.address.address
+  - address: x.address.address
     address autocomplete: True
-  - unit: client.address.unit
+  - unit: x.address.unit
     required: False
-  - city: client.address.city
-  - state: client.address.state
+  - city: x.address.city
+  - state: x.address.state
     code: |
       states_list()
     default: "MA"
-  - zip: client.address.zip
-  - county: client.address.county
+  - zip: x.address.zip
+  - county: x.address.county
     required: False
 ---
 question: |
