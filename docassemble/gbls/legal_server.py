@@ -84,8 +84,8 @@ class LegalServerFields(DADict):
 
     def load_adverse_parties(self,adverse_parties):
         """Loads up the Person object (e.g., adverse_party) with fields from Legal Server. Fills in name"""
-        adverse_text = self.elements.get('adverse_parties')
-        if adverse_text == '':
+        adverse_text = self.elements.get('adverse_parties','')
+        if adverse_text == '' or adverse_text is None:
             return
 
         # This regex will match one or more Adverse Parties from Legal Server
