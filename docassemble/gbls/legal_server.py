@@ -58,6 +58,7 @@ class LegalServerFields(DADict):
                     client.address.unit = address_parts[0].get('OccupancyType', '') + ' ' + address_parts[0].get('OccupancyIdentifier')
                     client.address.city = address_parts[0].get('PlaceName')
                     client.address.zip = address_parts[0].get('ZipCode')
+                    client.address.state = address_parts[0].get('StateName')
                 else:
                     raise Exception('We expected a Street Address. Fall back to Google Geolocation')
             except:
