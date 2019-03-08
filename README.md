@@ -13,7 +13,7 @@ standard Individual attribute names.
 To use (and add the objects `client`, `advocate`, and `adverse_parties`) 
 include `docassemble.gbls:basic-questions-gbls.yml`
 
-E.g., when you include `docassemble.gbls.basic-questions-gbls.yml`, you will have
+E.g., when you include `docassemble.gbls:basic-questions-gbls.yml`, you will have
 the following attributes available to you:
 
 * client

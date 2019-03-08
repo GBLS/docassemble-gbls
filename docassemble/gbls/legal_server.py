@@ -3,12 +3,13 @@ from docassemble.base.util import as_datetime, Individual, Person, from_b64_json
 import docassemble.base.functions
 from nameparser import HumanName
 import re
+import usaddress
 
 class LegalServerFields(DADict):
     """Class to handle Legal Server fields passed with JavaScript as a base64 encoded JSON object into the URL argument 'args'.
     Constructor may be called with url_args=url_args or .using(url_args=url_args). Optionally specify client(Individual), advocate(Individual), and adverse_parties (DAList.using(object_type=Person))"""
     def init(self, *pargs, **kwargs):
-        super(LegalServerFields, self).init(*pargs, **kwargs)
+        super(LegalServerFields, self).init(*pargs, **kwargs) 
         self.auto_gather = False
         self.gathered = True
         if hasattr(self, 'url_args') and self.url_args.get('args',False):
@@ -29,6 +30,8 @@ class LegalServerFields(DADict):
         #    return # Don't do anything if we didn't get a URL args argument
         self.elements = ls_args
 
+        if ls_args.get('case_email'):
+            self.case_email = ls_args.get('case_email')
         if ls_args.get('name',False):
             self.client_name_parts = HumanName(ls_args.get('name',''))
         if ls_args.get('sidebar_advocate',False):
@@ -47,8 +50,19 @@ class LegalServerFields(DADict):
             client.name.last = self.client_name_parts['last']
             client.name.suffix = self.client_name_parts['suffix']
             client.name.middle = self.client_name_parts['middle']
-            client.address.address = self.elements.get('full_address','')
-            client.address.geolocate(self.elements.get('full_address',''))
+
+            address_parts = usaddress.tag(self.elements.get('full_address'))
+            try:
+                if address_parts[1].lower() == 'street address':
+                    client.address.address = address_parts[0].get('AddressNumber','') + ' ' + address_parts[0].get('StreetName','')  + ' ' + address_parts[0].get('StreetNamePostType', '')
+                    client.address.unit = address_parts[0].get('OccupancyType', '') + ' ' + address_parts[0].get('OccupancyIdentifier')
+                    client.address.city = address_parts[0].get('PlaceName')
+                    client.address.zip = address_parts[0].get('ZipCode')
+                else:
+                    raise Exception('We expected a Street Address. Fall back to Google Geolocation')
+            except:
+                client.address.address = self.elements.get('full_address','')
+                client.address.geolocate(self.elements.get('full_address',''))
         except:
             pass
         if self.elements.get('date_of_birth', False):
@@ -71,6 +85,8 @@ class LegalServerFields(DADict):
     def load_adverse_parties(self,adverse_parties):
         """Loads up the Person object (e.g., adverse_party) with fields from Legal Server. Fills in name"""
         adverse_text = self.elements.get('adverse_parties')
+        if adverse_text == '':
+            return
 
         # This regex will match one or more Adverse Parties from Legal Server
         # To help avoid a "read only" regex

@@ -8,7 +8,7 @@ comment: |
 ---
 modules:
   - docassemble.base.util
-  - .legal_server
+  - docassemble.gbls.legal_server
 ---
 objects:
   - client: Individual
@@ -26,7 +26,7 @@ code: |
 ---
 generic object: Individual
 question: |
-  ${x.possessive('name')}
+  ${x.object_possessive('name')}
 fields:
   - First name: x.name.first
   - Middle name: x.name.middle
