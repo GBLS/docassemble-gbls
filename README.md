@@ -28,3 +28,41 @@ the following attributes available to you:
 Name fields and email will also be available for `advocate`. adverse_parties will
 be a DAList of Persons, with adverse_party[i].name.text and adverse_party[i].full_name()
 available. Address of adverse parties is not parsed.
+
+# Integrating with Legal Server
+
+After you install this package on your Docassemble Server, create a new instruction
+block on the case page with the contents below.
+
+Replace both instances of MYDOCASSEMBLESERVER with the name of your Docassemble server (e.g., `docs.legalaid.org`)
+and replace the text MYAPIKEY with an [API key](https://docassemble.org/docs/api.html#manage_api) that you generate on your Docassemble
+profile. Get the API key by clicking on your email address, select Profile, and then 
+Other Settings | API key.
+
+You will see a new block on the page with the same interviews that you see when you visit
+/list on your Docassemble server.
+
+```
+<input type="hidden" id="da_api_url" value="https://MYDOCASSEMBLESERVER/api/list?key="/>
+<input type="hidden" id="da_api_key" value="MYAPIKEY" />
+<script type="text/javascript" src="https://MYDOCASSEMBLESERVER/packagestatic/docassemble.gbls/docassemble-ls.js">
+</script>
+
+<div class="book book_large" id="docassemble_container">
+    <div class="bookTabRow">
+        <ul class="tab_start_here htabs">
+        <li class="bookTabItem dynamicBookTabItem selected_book_tab">
+        <a class="select">Docassemble Interviews</a>
+        </li>
+        </ul>
+    </div>
+    <div class="bookPage">
+        <div class="dynamicBookContents tabs">
+                <div style="border: 0px; padding: 0px; margin: 0px;"><div class="form_container"><div class="listview_outer">
+                    <div id="interviews" class="datatable">
+                    </div>
+                </div></div></div>
+        </div>
+    </div>
+</div>
+```
