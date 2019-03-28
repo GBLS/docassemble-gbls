@@ -23,7 +23,7 @@ class LegalServerFields(DADict):
         if not url_args.get('args',False):
             return
         else:
-            ls_args = from_b64_json(url_args.get('args',None))
+            ls_args = from_b64_json(url_args.get('args',None)+'===') # Add padding that might get stripped away
         
         #if ls_args is None:
             # self.elements = dict()
