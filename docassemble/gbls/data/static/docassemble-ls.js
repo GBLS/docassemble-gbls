@@ -265,6 +265,7 @@ var Base64 = {
         var aTag = document.createElement('a');
         aTag.setAttribute('href', interview['link'] + '&args=' + variableJSON+'&new_session=1');
         aTag.innerHTML = interview['title'];
+        aTag.target = "_blank";
         cell.appendChild(aTag);
         var tag_cell = row.insertCell();
         tag_cell.innerHTML = interview['tags'].join();
