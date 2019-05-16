@@ -65,3 +65,14 @@ generic object: Individual
 question: |
   ${x.possessive('signature')}
 signature: x.signature
+---
+generic object: Individual
+question: |
+  ${x.possessive('Social Security Number')} 
+fields:
+  - SSN: x.ssn
+---
+generic object: Individual
+code: |
+  x.ssn_last_4 = x.ssn[-4:]
+  
