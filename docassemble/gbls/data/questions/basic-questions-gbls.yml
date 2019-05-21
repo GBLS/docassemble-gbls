@@ -74,5 +74,5 @@ fields:
 ---
 generic object: Individual
 code: |
-  x.ssn_last_4 = x.ssn[-4:]
-  
+  if x.ssn:
+    x.ssn_last_4 = x.ssn[-4:]

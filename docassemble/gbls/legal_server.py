@@ -71,8 +71,10 @@ class LegalServerFields(DADict):
         client.email = self.elements.get('sidebar_email','')
         client.mobile_number = self.elements.get('sidebar_mobile_phone','')
         client.phone_number = self.elements.get('sidebar_home_phone','')
-        client.ssn = self.elements.get('social_security','')
-        client.ssn_last_4 = self.elements.get('social_security','')[-4:]
+        if self.elements.get('social_security',False):
+            client.ssn = self.elements.get('social_security','')
+        if self.elements.get('social_security',False) and client.ssn != '':
+            client.ssn_last_4 = client.ssn[-4:]
 
     def load_advocate(self, advocate):
         """Loads up the Individual object (e.g., advocate) with fields from Legal Server. Fills in name and email address attributes"""
