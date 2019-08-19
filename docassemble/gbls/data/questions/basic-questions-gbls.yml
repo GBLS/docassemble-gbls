@@ -26,7 +26,7 @@ code: |
 ---
 generic object: Individual
 question: |
-  ${x.object_possessive('name')}
+  ${capitalize(x.object_possessive('name'))}
 fields:
   - First name: x.name.first
   - Middle name: x.name.middle
@@ -35,7 +35,7 @@ fields:
 ---
 generic object: Individual
 question: |
-  ${x.possessive('address')}
+  ${capitalize(x.possessive('address'))}
 fields:
   - address: x.address.address
     address autocomplete: True
@@ -63,12 +63,12 @@ yesno: adverse_parties.there_is_another
 ---
 generic object: Individual
 question: |
-  ${x.possessive('signature')}
+  ${capitalize(x.possessive('signature'))}
 signature: x.signature
 ---
 generic object: Individual
 question: |
-  ${x.possessive('Social Security Number')} 
+  ${capitalize(x.possessive('Social Security Number'))} 
 fields:
   - SSN: x.ssn
 ---
