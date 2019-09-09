@@ -83,6 +83,7 @@ class LegalServerFields(DADict):
             advocate.name.last = self.advocate_name_parts['last']
             advocate.name.middle = self.advocate_name_parts['middle']
             advocate.name.suffix = self.advocate_name_parts['suffix']
+            advocate.program = self.elements.get('sidebar_assignment_program','')
         except:
             pass
         advocate.email = self.elements.get('initiating_user_email_address')
