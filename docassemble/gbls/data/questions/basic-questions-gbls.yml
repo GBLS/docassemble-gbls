@@ -76,3 +76,7 @@ generic object: Individual
 code: |
   if x.ssn:
     x.ssn_last_4 = x.ssn[-4:]
+---
+generic object: Individual
+code: |
+  x.program = ''
