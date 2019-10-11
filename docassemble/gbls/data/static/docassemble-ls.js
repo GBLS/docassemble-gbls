@@ -236,7 +236,7 @@ var Base64 = {
     return args
   }
 
-  function loadInterviews(divTitle, variableJSON) {
+  function loadInterviews(divTitle, variableJSON, tags = [], useEveryoneTag = true) {
     var request = new XMLHttpRequest();
     var mydiv = document.getElementById(divTitle);
     document.getElementById('docassemble_container').parentElement.setAttribute('class','book');
@@ -256,21 +256,26 @@ var Base64 = {
       table.innerHTML = "<thead><th class='tablehead'>Interview Link</th><th class='tablehead'>Tags</th></thead>";
       tbody = document.createElement('tbody');
       var loop=1
+      if (useEveryoneTag) {
+        tags.push('everyone') // By default, always check for interviews tagged "everyone"
+      }
       for (var interview of data) {
-        var row = tbody.insertRow(0);
-        row_class = loop % 2 == 0 ? "listviewRowEven" : "listviewRowOdd";
-        row.setAttribute('class', row_class)
-        var cell = row.insertCell(0);
-        //mydiv.appendChild(li);
-        var aTag = document.createElement('a');
-        aTag.setAttribute('href', interview['link'] + '&args=' + variableJSON+'&new_session=1');
-        aTag.innerHTML = interview['title'];
-        aTag.target = "_blank";
-        cell.appendChild(aTag);
-        var tag_cell = row.insertCell();
-        tag_cell.innerHTML = interview['tags'].join();
-        //console.log(interview['link']);
-        loop++;
+        if (tags.length < 1 || (tags.filter(value => interview['tags'].includes(value))).length > 0) {
+          var row = tbody.insertRow(0);
+          row_class = loop % 2 == 0 ? "listviewRowEven" : "listviewRowOdd";
+          row.setAttribute('class', row_class)
+          var cell = row.insertCell(0);
+          //mydiv.appendChild(li);
+          var aTag = document.createElement('a');
+          aTag.setAttribute('href', interview['link'] + '&args=' + variableJSON+'&new_session=1');
+          aTag.innerHTML = interview['title'];
+          aTag.target = "_blank";
+          cell.appendChild(aTag);
+          var tag_cell = row.insertCell();
+          tag_cell.innerHTML = interview['tags'].join();
+          //console.log(interview['link']);
+          loop++;
+        }
       }
       table.appendChild(tbody);
       mydiv.appendChild(table)
@@ -281,8 +286,8 @@ var Base64 = {
 
   function myOnLoad(event) {
     var theValues = getCleanArgs()
-    loadInterviews("interviews",  encodeURIComponent(Base64.encode(JSON.stringify(theValues))));
-
+    //theValues['sidebar_assignment_program']
+    loadInterviews("interviews",  encodeURIComponent(Base64.encode(JSON.stringify(theValues))), [theValues['sidebar_assignment_program']]);
   }
 
   if (window.attachEvent) {

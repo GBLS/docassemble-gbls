@@ -10,6 +10,7 @@ modules:
   - docassemble.base.util
   - docassemble.gbls.legal_server
 ---
+mandatory: True
 objects:
   - client: Individual
   - advocate: Individual
