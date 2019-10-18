@@ -7,7 +7,7 @@ import usaddress
 
 class LegalServerFields(DADict):
     """Class to handle Legal Server fields passed with JavaScript as a base64 encoded JSON object into the URL argument 'args'.
-    Constructor may be called with url_args=url_args or .using(url_args=url_args). Optionally specify client(Individual), advocate(Individual), and adverse_parties (DAList.using(object_type=Person))"""
+    Constructor may be called with url_args=url_args or .using(url_args=url_args). Optionally specify client(Individual), advocate(Individual), pbadvocate(Individual) and adverse_parties (DAList.using(object_type=Person))"""
     def init(self, *pargs, **kwargs):
         super(LegalServerFields, self).init(*pargs, **kwargs) 
         self.auto_gather = False
@@ -36,12 +36,16 @@ class LegalServerFields(DADict):
             self.client_name_parts = HumanName(ls_args.get('name',''))
         if ls_args.get('sidebar_advocate',False):
             self.advocate_name_parts = HumanName(ls_args.get('sidebar_advocate',''))
+        if ls_args.get('pro_bono_attorney_s_name',False):
+            self.pbadvocate_name_parts = HumanName(ls_args.get('pro_bono_attorney_s_name',''))
         if hasattr(self,'client'):
             self.load_client(self.client)
         if hasattr(self,'advocate'):
             self.load_advocate(self.advocate)
         if hasattr(self, 'adverse_parties'):
             self.load_adverse_parties(self.adverse_parties)
+        if hasattr(self, 'pbadvocate'):
+            self.load_pbadvocate(self.pbadvocate)
 
     def load_client(self,client):
         """Loads up the Individual object (e.g., client) with fields from Legal Server. Fills in birthdate, name, email, and address attributes"""
@@ -87,6 +91,36 @@ class LegalServerFields(DADict):
         except:
             pass
         advocate.email = self.elements.get('initiating_user_email_address')
+
+    def load_pbadvocate(self, pbadvocate):
+        """Loads up the Individual objection (e.g., pbadvocate) with fields from Legal Server. Fills in name, firm, address, phone, and email attributes"""
+        try: 
+            pbadvocate.name.first = self.pbadvocate_name_parts['first']
+            pbadvocate.name.last = self.pbadvocate_name_parts['last']
+            pbadvocate.name.middle = self.pbadvocate_name_parts['middle']
+            pbadvocate.name.suffix = self.pbadvocate_name_parts['suffix']
+        except:
+            pass
+        pbadvocate.email = self.elements.get('pro_bono_attorney_s_email')
+        pbadvocate.phone_number = self.elements.get('pro_bono_attorney_s_phone')
+        pbadvocate.firm = self.elements.get('pro_bono_attorney_s_firm')
+        pbadvocate.salutation = self.elements.get('pro_bono_attorney_s_salutation')
+        
+        pbaddress_parts = usaddress.tag(self.elements.get('pro_bono_attorney_s_address'))
+            try:
+                if pbaddress_parts[1].lower() == 'street address':
+                    pbadvocate.address.address = pbaddress_parts[0].get('AddressNumber','') + ' ' + pbaddress_parts[0].get('StreetName','')  + ' ' + pbaddress_parts[0].get('StreetNamePostType', '')
+                    pbadvocate.address.unit = pbaddress_parts[0].get('OccupancyType', '') + ' ' + pbaddress_parts[0].get('OccupancyIdentifier')
+                    pbadvocate.address.city = pbaddress_parts[0].get('PlaceName')
+                    pbadvocate.address.zip = pbaddress_parts[0].get('ZipCode')
+                    pbadvocate.address.state = pbaddress_parts[0].get('StateName')
+                else:
+                    raise Exception('We expected a Street Address. Fall back to Google Geolocation')
+            except:
+                pbadvocate.address.address = self.elements.get('pro_bono_attorney_s_address','')
+                pbadvocate.address.geolocate(self.elements.get('pro_bono_attorney_s_address',''))
+        except:
+            pass
 
     def load_adverse_parties(self,adverse_parties):
         """Loads up the Person object (e.g., adverse_party) with fields from Legal Server. Fills in name"""
