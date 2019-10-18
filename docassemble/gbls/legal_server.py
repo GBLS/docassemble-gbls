@@ -139,8 +139,6 @@ class LegalServerFields(DADict):
             except:
                 pbadvocate.address.address = self.elements.get('pro_bono_attorney_s_address','')
                 pbadvocate.address.geolocate(self.elements.get('pro_bono_attorney_s_address',''))
-        except:
-            pass
 
     def load_adverse_parties(self,adverse_parties):
         """Loads up the Person object (e.g., adverse_party) with fields from Legal Server. Fills in name"""
