@@ -127,18 +127,18 @@ class LegalServerFields(DADict):
         
         if self.elements.get('pro_bono_attorney_s_address',False):
             pbaddress_parts = usaddress.tag(self.elements.get('pro_bono_attorney_s_address'))
-                try:
-                    if pbaddress_parts[1].lower() == 'street address':
-                        pbadvocate.address.address = pbaddress_parts[0].get('AddressNumber','') + ' ' + pbaddress_parts[0].get('StreetName','')  + ' ' + pbaddress_parts[0].get('StreetNamePostType', '')
-                        pbadvocate.address.unit = pbaddress_parts[0].get('OccupancyType', '') + ' ' + pbaddress_parts[0].get('OccupancyIdentifier')
-                        pbadvocate.address.city = pbaddress_parts[0].get('PlaceName')
-                        pbadvocate.address.zip = pbaddress_parts[0].get('ZipCode')
-                        pbadvocate.address.state = pbaddress_parts[0].get('StateName')
-                    else:
-                        raise Exception('We expected a Street Address. Fall back to Google Geolocation')
-                except:
-                    pbadvocate.address.address = self.elements.get('pro_bono_attorney_s_address','')
-                    pbadvocate.address.geolocate(self.elements.get('pro_bono_attorney_s_address',''))
+            try:
+                if pbaddress_parts[1].lower() == 'street address':
+                    pbadvocate.address.address = pbaddress_parts[0].get('AddressNumber','') + ' ' + pbaddress_parts[0].get('StreetName','')  + ' ' + pbaddress_parts[0].get('StreetNamePostType', '')
+                    pbadvocate.address.unit = pbaddress_parts[0].get('OccupancyType', '') + ' ' + pbaddress_parts[0].get('OccupancyIdentifier')
+                    pbadvocate.address.city = pbaddress_parts[0].get('PlaceName')
+                    pbadvocate.address.zip = pbaddress_parts[0].get('ZipCode')
+                    pbadvocate.address.state = pbaddress_parts[0].get('StateName')
+                else:
+                    raise Exception('We expected a Street Address. Fall back to Google Geolocation')
+            except:
+                pbadvocate.address.address = self.elements.get('pro_bono_attorney_s_address','')
+                pbadvocate.address.geolocate(self.elements.get('pro_bono_attorney_s_address',''))
         except:
             pass
 
