@@ -80,18 +80,18 @@ class LegalServerFields(DADict):
         if self.elements.get('social_security',False) and client.ssn != '':
             client.ssn_last_4 = client.ssn[-4:]
         if self.elements.get('language',False):
-            if self.elements.get('language','') == 'English'
+            if self.elements.get('language','') == 'English':
                 client.language = 'en'
-            if self.elements.get('language','') == 'Spanish'
+            if self.elements.get('language','') == 'Spanish':
                 client.language = 'es'
-            if self.elements.get('language','') == 'Vietnamese'
+            if self.elements.get('language','') == 'Vietnamese':
                 client.language = 'vi'
-            if self.elements.get('language','') == 'Chinese'
+            if self.elements.get('language','') == 'Chinese':
                 client.language = 'zo'                
         if self.elements.get('gender',False):
-            if self.elements.get('gender','') == 'Male'
+            if self.elements.get('gender','') == 'Male':
                 client.gender = 'male'
-            if self.elements.get('gender','') == 'Female'
+            if self.elements.get('gender','') == 'Female':
                 client.gender = 'female'
                 
     def load_advocate(self, advocate):
