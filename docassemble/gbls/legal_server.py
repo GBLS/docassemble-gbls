@@ -79,7 +79,21 @@ class LegalServerFields(DADict):
             client.ssn = self.elements.get('social_security','')
         if self.elements.get('social_security',False) and client.ssn != '':
             client.ssn_last_4 = client.ssn[-4:]
-
+        if self.elements.get('language',False):
+            if self.elements.get('language','') == 'English'
+                client.language = 'en'
+            if self.elements.get('language','') == 'Spanish'
+                client.language = 'es'
+            if self.elements.get('language','') == 'Vietnamese'
+                client.language = 'vi'
+            if self.elements.get('language','') == 'Chinese'
+                client.language = 'zo'                
+        if self.elements.get('gender',False):
+            if self.elements.get('gender','') == 'Male'
+                client.gender = 'male'
+            if self.elements.get('gender','') == 'Female'
+                client.gender = 'female'
+                
     def load_advocate(self, advocate):
         """Loads up the Individual object (e.g., advocate) with fields from Legal Server. Fills in name and email address attributes"""
         try:
@@ -94,31 +108,37 @@ class LegalServerFields(DADict):
 
     def load_pbadvocate(self, pbadvocate):
         """Loads up the Individual objection (e.g., pbadvocate) with fields from Legal Server. Fills in name, firm, address, phone, and email attributes"""
-        try: 
-            pbadvocate.name.first = self.pbadvocate_name_parts['first']
-            pbadvocate.name.last = self.pbadvocate_name_parts['last']
-            pbadvocate.name.middle = self.pbadvocate_name_parts['middle']
-            pbadvocate.name.suffix = self.pbadvocate_name_parts['suffix']
-        except:
-            pass
-        pbadvocate.email = self.elements.get('pro_bono_attorney_s_email')
-        pbadvocate.phone_number = self.elements.get('pro_bono_attorney_s_phone')
-        pbadvocate.firm = self.elements.get('pro_bono_attorney_s_firm')
-        pbadvocate.salutation = self.elements.get('pro_bono_attorney_s_salutation')
-        
-        pbaddress_parts = usaddress.tag(self.elements.get('pro_bono_attorney_s_address'))
-            try:
-                if pbaddress_parts[1].lower() == 'street address':
-                    pbadvocate.address.address = pbaddress_parts[0].get('AddressNumber','') + ' ' + pbaddress_parts[0].get('StreetName','')  + ' ' + pbaddress_parts[0].get('StreetNamePostType', '')
-                    pbadvocate.address.unit = pbaddress_parts[0].get('OccupancyType', '') + ' ' + pbaddress_parts[0].get('OccupancyIdentifier')
-                    pbadvocate.address.city = pbaddress_parts[0].get('PlaceName')
-                    pbadvocate.address.zip = pbaddress_parts[0].get('ZipCode')
-                    pbadvocate.address.state = pbaddress_parts[0].get('StateName')
-                else:
-                    raise Exception('We expected a Street Address. Fall back to Google Geolocation')
+        if self.elements.get('pro_bono_attorney_s_name',False):
+            try: 
+                pbadvocate.name.first = self.pbadvocate_name_parts['first']
+                pbadvocate.name.last = self.pbadvocate_name_parts['last']
+                pbadvocate.name.middle = self.pbadvocate_name_parts['middle']
+                pbadvocate.name.suffix = self.pbadvocate_name_parts['suffix']
             except:
-                pbadvocate.address.address = self.elements.get('pro_bono_attorney_s_address','')
-                pbadvocate.address.geolocate(self.elements.get('pro_bono_attorney_s_address',''))
+                pass
+        if self.elements.get('pro_bono_attorney_s_email',False):
+            pbadvocate.email = self.elements.get('pro_bono_attorney_s_email')
+        if self.elements.get('pro_bono_attorney_s_phone',False):
+            pbadvocate.phone_number = self.elements.get('pro_bono_attorney_s_phone')
+        if self.elements.get('pro_bono_attorney_s_firm',False):
+            pbadvocate.firm = self.elements.get('pro_bono_attorney_s_firm')
+        if self.elements.get('pro_bono_attorney_s_salutation',False):
+            pbadvocate.salutation = self.elements.get('pro_bono_attorney_s_salutation')
+        
+        if self.elements.get('pro_bono_attorney_s_address',False):
+            pbaddress_parts = usaddress.tag(self.elements.get('pro_bono_attorney_s_address'))
+                try:
+                    if pbaddress_parts[1].lower() == 'street address':
+                        pbadvocate.address.address = pbaddress_parts[0].get('AddressNumber','') + ' ' + pbaddress_parts[0].get('StreetName','')  + ' ' + pbaddress_parts[0].get('StreetNamePostType', '')
+                        pbadvocate.address.unit = pbaddress_parts[0].get('OccupancyType', '') + ' ' + pbaddress_parts[0].get('OccupancyIdentifier')
+                        pbadvocate.address.city = pbaddress_parts[0].get('PlaceName')
+                        pbadvocate.address.zip = pbaddress_parts[0].get('ZipCode')
+                        pbadvocate.address.state = pbaddress_parts[0].get('StateName')
+                    else:
+                        raise Exception('We expected a Street Address. Fall back to Google Geolocation')
+                except:
+                    pbadvocate.address.address = self.elements.get('pro_bono_attorney_s_address','')
+                    pbadvocate.address.geolocate(self.elements.get('pro_bono_attorney_s_address',''))
         except:
             pass
 
