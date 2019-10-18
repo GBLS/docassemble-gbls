@@ -7,7 +7,7 @@ import usaddress
 
 class LegalServerFields(DADict):
     """Class to handle Legal Server fields passed with JavaScript as a base64 encoded JSON object into the URL argument 'args'.
-    Constructor may be called with url_args=url_args or .using(url_args=url_args). Optionally specify client(Individual), advocate(Individual), pbadvocate(Individual) and adverse_parties (DAList.using(object_type=Person))"""
+    Constructor may be called with url_args=url_args or .using(url_args=url_args). Optionally specify client(Individual), advocate(Individual), pbadvocate(Individual), initiator(Individual) and adverse_parties (DAList.using(object_type=Person))"""
     def init(self, *pargs, **kwargs):
         super(LegalServerFields, self).init(*pargs, **kwargs) 
         self.auto_gather = False
@@ -42,12 +42,16 @@ class LegalServerFields(DADict):
             self.client_name_parts = HumanName(ls_args.get('name',''))
         if ls_args.get('sidebar_advocate',False):
             self.advocate_name_parts = HumanName(ls_args.get('sidebar_advocate',''))
+        if ls_args.get('initiating_user',False):
+            self.initiator_name_parts = HumanName(ls_args.get('initiating_user',''))
         if ls_args.get('pro_bono_attorney_s_name',False):
             self.pbadvocate_name_parts = HumanName(ls_args.get('pro_bono_attorney_s_name',''))
         if hasattr(self,'client'):
             self.load_client(self.client)
         if hasattr(self,'advocate'):
             self.load_advocate(self.advocate)
+        if hasattr(self,'initiator'):
+            self.load_initiator(self.initiator)
         if hasattr(self, 'adverse_parties'):
             self.load_adverse_parties(self.adverse_parties)
         if hasattr(self, 'pbadvocate'):
@@ -112,6 +116,19 @@ class LegalServerFields(DADict):
             pass
         advocate.email = self.elements.get('initiating_user_email_address')
 
+    def load_initiator(self, initiator):
+        """Loads up the Individual object (e.g., initiator) with fields from Legal Server. Fills in name and email address attributes"""
+        try:
+            initiator.name.first = self.initiator_name_parts['first']
+            initiator.name.last = self.initiator_name_parts['last']
+            initiator.name.middle = self.initiator_name_parts['middle']
+            initiator.name.suffix = self.initiator_name_parts['suffix']
+            initiator.program = self.elements.get('sidebar_assignment_program','')
+        except:
+            pass
+        initiator.email = self.elements.get('initiating_user_email_address')
+
+        
     def load_pbadvocate(self, pbadvocate):
         """Loads up the Individual objection (e.g., pbadvocate) with fields from Legal Server. Fills in name, firm, address, phone, and email attributes"""
         if self.elements.get('pro_bono_attorney_s_name',False):
