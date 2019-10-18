@@ -32,6 +32,8 @@ class LegalServerFields(DADict):
 
         if ls_args.get('case_email'):
             self.case_email = ls_args.get('case_email')
+        if ls_args.get('id'):
+            self.casenumber = ls_args.get('id')
         if ls_args.get('name',False):
             self.client_name_parts = HumanName(ls_args.get('name',''))
         if ls_args.get('sidebar_advocate',False):
