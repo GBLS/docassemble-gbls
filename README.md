@@ -66,3 +66,9 @@ You will see a new block on the page with the same interviews that you see when 
     </div>
 </div>
 ```
+
+# Filtering
+
+By default, interviews will be filtered to match the metadata tag equalling the program name.
+Any interview tagged "everyone" will also be displayed.
+
