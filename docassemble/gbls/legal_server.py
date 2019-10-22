@@ -4,6 +4,7 @@ import docassemble.base.functions
 from nameparser import HumanName
 import re
 import usaddress
+from flanker.addresslib import address # parse email addresses
 
 class LegalServerFields(DADict):
     """Class to handle Legal Server fields passed with JavaScript as a base64 encoded JSON object into the URL argument 'args'.
@@ -97,12 +98,8 @@ class LegalServerFields(DADict):
             if self.elements.get('language','') == 'Vietnamese':
                 client.language = 'vi'
             if self.elements.get('language','') == 'Chinese':
-                client.language = 'zo'                
-        if self.elements.get('gender',False):
-            if self.elements.get('gender','') == 'Male':
-                client.gender = 'male'
-            if self.elements.get('gender','') == 'Female':
-                client.gender = 'female'
+                client.language = 'zo'
+        client.gender = self.elements.get('gender','').lower()
                 
     def load_advocate(self, advocate):
         """Loads up the Individual object (e.g., advocate) with fields from Legal Server. Fills in name and email address attributes"""
@@ -114,7 +111,10 @@ class LegalServerFields(DADict):
             advocate.program = self.elements.get('sidebar_assignment_program','')
         except:
             pass
-        advocate.email = self.elements.get('initiating_user_email_address')
+        try:
+            advocate.email = address.parse(self.elements.get('initiating_user_email_address')).address
+        except:
+            advocate.email = self.elements.get('initiating_user_email_address')
 
     def load_initiator(self, initiator):
         """Loads up the Individual object (e.g., initiator) with fields from Legal Server. Fills in name and email address attributes"""
