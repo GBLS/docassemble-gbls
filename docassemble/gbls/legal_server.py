@@ -124,10 +124,9 @@ class LegalServerFields(DADict):
             initiator.name.middle = self.initiator_name_parts['middle']
             initiator.name.suffix = self.initiator_name_parts['suffix']
             initiator.program = self.elements.get('sidebar_assignment_program','')
+            initiator.email = self.elements.get('initiating_user_email_address','')
         except:
             pass
-        initiator.email = self.elements.get('initiating_user_email_address')
-
         
     def load_pbadvocate(self, pbadvocate):
         """Loads up the Individual objection (e.g., pbadvocate) with fields from Legal Server. Fills in name, firm, address, phone, and email attributes"""
