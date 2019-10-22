@@ -4,7 +4,7 @@ import docassemble.base.functions
 from nameparser import HumanName
 import re
 import usaddress
-from flanker.addresslib import address # parse email addresses
+from email.utils import parseaddr # parse email addresses
 
 class LegalServerFields(DADict):
     """Class to handle Legal Server fields passed with JavaScript as a base64 encoded JSON object into the URL argument 'args'.
@@ -112,7 +112,8 @@ class LegalServerFields(DADict):
         except:
             pass
         try:
-            advocate.email = address.parse(self.elements.get('initiating_user_email_address')).address
+            email = parseaddr(self.elements.get('initiating_user_email_address'))
+            advocate.email  = email[1]
         except:
             advocate.email = self.elements.get('initiating_user_email_address')
 
