@@ -53,7 +53,7 @@ setup(name='docassemble.gbls',
       url='https://docassemble.org',
       packages=find_packages(),
       namespace_packages=['docassemble'],
-      install_requires=['flanker', 'nameparser', 'usaddress'],
+      install_requires=['nameparser', 'usaddress'],
       zip_safe=False,
       package_data=find_package_data(where='docassemble/gbls/', package='docassemble.gbls'),
      )
