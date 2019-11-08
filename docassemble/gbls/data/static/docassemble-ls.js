@@ -233,6 +233,37 @@ var Base64 = {
     }
 
     //console.log(args)
+
+    var containers = document.getElementsByClassName('form_container');
+    //var all_tables = {}
+    for (var i = 0; i<containers.length; i++) {
+      var datatables = containers[i].getElementsByClassName('datatable');
+      var section_heads = containers[i].getElementsByClassName('form_section');
+      tables_match_labels = datatables.length == section_heads.length
+      if (!tables_match_labels) {
+        //console.log('Not all listviews in this section are labeled. Display the label to add listview name to url_args.');
+      }
+      for (var j=0; j<datatables.length; j++) {
+        label = tables_match_labels ? section_heads[j].innerText : datatables[j].id
+
+        var cols = datatables[j].getElementsByTagName('th');
+        var body = datatables[j].getElementsByTagName('tbody')[2]; // contains content
+        if (body) {
+          var table = Array();
+          rows = body.getElementsByTagName('tr');
+          for (var k=0;k<rows.length; k++) {
+            var new_row = {}
+            var cells = rows[k].getElementsByTagName('td');
+            for (var l=0;l<cells.length; l++) {
+              new_row[cols[l].textContent] = cells[l].textContent;
+            }
+            table.push(new_row);
+          }
+          args[label] = table;
+        }
+      }
+    }
+    
     return args
   }
 
@@ -285,6 +316,7 @@ var Base64 = {
   }
 
   function myOnLoad(event) {
+    document.getElementById('docassemble-fields').parentElement.parentElement.style.display = 'none'
     var theValues = getCleanArgs()
     //theValues['sidebar_assignment_program']
     loadInterviews("interviews",  encodeURIComponent(Base64.encode(JSON.stringify(theValues))), [theValues['sidebar_assignment_program']]);
