@@ -57,6 +57,10 @@ class LegalServerFields(DADict):
             self.load_adverse_parties(self.adverse_parties)
         if hasattr(self, 'pbadvocate'):
             self.load_pbadvocate(self.pbadvocate)
+        if hasattr(self, 'household'):
+            self.load_household(self.household)
+        if hasattr(self, 'income'):
+            self.load_income(self.income)
 
     def load_client(self,client):
         """Loads up the Individual object (e.g., client) with fields from Legal Server. Fills in birthdate, name, email, and address attributes"""
@@ -164,10 +168,83 @@ class LegalServerFields(DADict):
                 pbadvocate.address.geolocate(self.elements.get('pro_bono_attorney_s_address',''))
 
     def load_adverse_parties(self,adverse_parties):
-        """Loads up the Person object (e.g., adverse_party) with fields from Legal Server. Fills in name"""
-        adverse_text = self.elements.get('adverse_parties','')
-        if adverse_text == '' or adverse_text is None:
-            return
+        """Try to set the provided object to the corresponding Legal Server listview"""
+        adverse_list = self.elements.get('Adverse Parties')
+        if not adverse_parties:
+            return self.fallback_load_adverse_parties(adverse_parties)
+        for person in adverse_list:
+            ap = Person()
+            ap.name.text = person.get('Adverse Party Name')
+            ap.birthdate = as_datetime(person.get('Date of Birth')) if not person.get('Date of Birth') == 'N/A' else None
+            ap.gender = person.get('Gender').lower() if not person.get('Gender') == 'N/A' else None
+            ap.race = person.get('Race') if not person.get('Race') == 'N/A' else None
+            try:
+                self.parse_address(person.get('Adverse Party Address'),ap.address)
+            except:
+                ap.address.address = person.get('Adverse Party Address')
+                ap.address.geolocate(person.get('Adverse Party Address'))
+            adverse_parties.add(ap)
+
+    def load_income(self,income):
+        """Load income from the Financial Information listview"""
+        income_list = self.elements.get('Income')
+        for source in income_list:
+            inc = income.appendObject()
+            inc.type = source.get('Type of Income')
+            inc.value = source.get('Amount')
+            freq = source.get('Frequency')
+            inc.owner = source.get('Family Member')
+
+            if freq == 'Annually':
+                inc.period = 1
+            elif freq == 'Monthly':
+                inc.period = 12
+            elif freq == 'Quarterly':
+                inc.period = 4
+            elif freq == 'Semi-Monthly':
+                inc.period = 6
+            elif freq == 'Biweekly':
+                inc.period = 26
+            elif freq == 'Weekly':
+                inc.period = 52
+            else:
+                inc.value = source.get('Monthly Amount')
+                inc.period = 12 # Default to monthly income if something goes wrong
+
+    def load_household(self, household):
+        """Try to set the provided object to the corresponding Legal Server listview"""
+        household_list = self.elements.get('Family Members')
+        for person in household_list:
+            hh = household.appendObject()
+            name_parts = HumanName(person.get('Name'))
+            hh.name.first = name_parts.first
+            hh.name.last = name_parts.last
+            hh.name.middle = name_parts.middle
+            hh.name.suffix = name_parts.suffix
+
+            hh.name.text = person.get('Adverse Party Name')
+            hh.birthdate = as_datetime(person.get('Date of Birth')) if not person.get('Date of Birth') == 'N/A' else None
+            hh.gender = person.get('Gender').lower() if not person.get('Gender') == 'N/A' else None
+            hh.race = person.get('Race') if not person.get('Race') == 'N/A' else None
+            hh.relationship = person.get('Relationship')
+
+            # household.add(hh)
+
+    @staticmethod
+    def parse_address(address_text, address_obj):
+        """Convert a text address like '123 Main St, Boston, MA' to a Docassemble Address object. Will throw an exception if not given a valid street address."""
+        address_parts = usaddress.tag(address_text)
+        if address_parts[1].lower() == 'street address':
+            address_obj.address = address_parts[0].get('AddressNumber','') + ' ' + address_parts[0].get('StreetName','')  + ' ' + address_parts[0].get('StreetNamePostType', '')
+            address_obj.unit = address_parts[0].get('OccupancyType', '') + ' ' + address_parts[0].get('OccupancyIdentifier')
+            address_obj.city = address_parts[0].get('PlaceName')
+            address_obj.zip = address_parts[0].get('ZipCode')
+            address_obj.state = address_parts[0].get('StateName')
+        else:
+            raise Exception("Not a valid street address")
+
+    def fallback_load_adverse_parties(self, adverse_parties):
+        """If there is not a listview labeled 'Adverse Parties', fall back on parsing the adverse_parties (display only) field."""
 
         # This regex will match one or more Adverse Parties from Legal Server
         # To help avoid a "read only" regex
