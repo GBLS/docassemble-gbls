@@ -3,12 +3,13 @@ comment: |
   This YML file works with legal_server.py to help you make use of JSON data sent
   from Legal Server (using Jonathan Pyle's instruction block trick)
   
-  It also defines three objects: client, advocate, and adverse_parties. If the 
+  It also defines seven objects: client, advocate, household, adverse_parties, pbadvocate, income, and initiator. If the 
   interview was not called from Legal Server, fallback questions are provided.
 ---
 modules:
   - docassemble.base.util
   - docassemble.gbls.legal_server
+  - docassemble.gbls.household
   - docassemble.income.income
 ---
 mandatory: True
@@ -17,7 +18,7 @@ objects:
   - advocate: Individual
   - pbadvocate: Individual
   - initiator: Individual
-  - household: DAList.using(object_type=Individual,auto_gather=False,gathered=True)
+  - household: HouseholdList.using(auto_gather=False,gathered=True)
   - income: IncomeList.using(auto_gather=False,gathered=True)
   - adverse_parties: DAList.using(object_type=Person,auto_gather=False,gathered=True)
 ---
