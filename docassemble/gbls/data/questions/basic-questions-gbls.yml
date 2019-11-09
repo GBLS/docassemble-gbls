@@ -9,6 +9,7 @@ comment: |
 modules:
   - docassemble.base.util
   - docassemble.gbls.legal_server
+  - docassemble.income.income
 ---
 mandatory: True
 objects:
@@ -16,12 +17,17 @@ objects:
   - advocate: Individual
   - pbadvocate: Individual
   - initiator: Individual
+  - household: DAList.using(object_type=Individual,auto_gather=False,gathered=True)
+  - income: IncomeList(auto_gather=False,gathered=True)
   - adverse_parties: DAList.using(object_type=Person,auto_gather=False,gathered=True)
 ---
 comment: |
   If this is not a separate objects block, it will create an error condition.
 objects:
-  - ls_fields: LegalServerFields.using(url_args=url_args,client=client,advocate=advocate,pbadvocate=pbadvocate,initiator=initiator,adverse_parties=adverse_parties)
+  - ls_fields: |
+      LegalServerFields.using(url_args=url_args,client=client,advocate=advocate,
+        pbadvocate=pbadvocate,initiator=initiator,adverse_parties=adverse_parties,
+        income=income,household=household)
 ---
 mandatory: True
 code: |
