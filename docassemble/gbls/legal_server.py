@@ -5,6 +5,7 @@ from nameparser import HumanName
 import re
 import usaddress
 from email.utils import parseaddr # parse email addresses
+from decimal import Decimal
 
 class LegalServerFields(DADict):
     """Class to handle Legal Server fields passed with JavaScript as a base64 encoded JSON object into the URL argument 'args'.
@@ -173,7 +174,7 @@ class LegalServerFields(DADict):
         if not adverse_parties:
             return self.fallback_load_adverse_parties(adverse_parties)
         for person in adverse_list:
-            ap = Person()
+            ap = adverse_parties.appendObject() # Person()
             ap.name.text = person.get('Adverse Party Name')
             ap.birthdate = as_datetime(person.get('Date of Birth')) if not person.get('Date of Birth') == 'N/A' else None
             ap.gender = person.get('Gender').lower() if not person.get('Gender') == 'N/A' else None
@@ -183,15 +184,17 @@ class LegalServerFields(DADict):
             except:
                 ap.address.address = person.get('Adverse Party Address')
                 ap.address.geolocate(person.get('Adverse Party Address'))
-            adverse_parties.add(ap)
+            # adverse_parties.add(ap)
 
     def load_income(self,income):
         """Load income from the Financial Information listview"""
-        income_list = self.elements.get('Income')
+        income_list = self.elements.get('Income',[])
         for source in income_list:
             inc = income.appendObject()
             inc.type = source.get('Type of Income')
-            inc.value = source.get('Amount')
+            # The conversion below could be made more robust (internationally), but this is fine for GBLS's site
+            # For alternative, add dependency to price-parser and Python 3.6+
+            inc.value = Decimal(source.get('Amount','').strip(' $'))
             freq = source.get('Frequency')
             inc.owner = source.get('Family Member')
 
@@ -208,12 +211,12 @@ class LegalServerFields(DADict):
             elif freq == 'Weekly':
                 inc.period = 52
             else:
-                inc.value = source.get('Monthly Amount')
+                inc.value = Decimal(source.get('Monthly Amount').strip(' $'))
                 inc.period = 12 # Default to monthly income if something goes wrong
 
     def load_household(self, household):
         """Try to set the provided object to the corresponding Legal Server listview"""
-        household_list = self.elements.get('Family Members')
+        household_list = self.elements.get('Family Members',[])
         for person in household_list:
             hh = household.appendObject()
             name_parts = HumanName(person.get('Name'))

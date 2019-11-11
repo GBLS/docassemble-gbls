@@ -11,13 +11,7 @@ class HouseholdList(DAList):
     @property
     def spouse(self):
         for person in self.elements:
-            if person.relationship.lower() == 'spouse':
-                return person
-            elif person.relationship.lower() == 'husband':
-                return person
-            elif person.relationship.lower() == 'wife':
-                return person
-            elif person.relationship.lower() == 'partner':
+            if person.relationship.lower() in ['spouse','husband', 'wife','partner']:
                 return person
         return DAEmpty()
     
@@ -26,12 +20,18 @@ class HouseholdList(DAList):
         """ Returns list of direct children/step/foster children (not grandchildren) based on the relationship attribute."""
         children = DAList(object_type=Individual, auto_gather=False, gathered=True)
         for person in self.elements:
-            if (person.relationship.lower() == 'child' or 
-                person.relationship.lower() == 'son' or 
-                person.relationship.lower() == 'daughter' or
-                person.relationship.lower() == 'foster child' or
-                person.relationship.lower() == 'stepchild' or
-                person.relationship.lower() == 'step child'):
-                x = children.appendObject()
-                x = person
+            if person.relationship.lower() in ['child','son','daughter','foster child','stepchild','step child']:
+                children.append(person)
         return children
+
+    @property
+    def guardians(self):
+        """Returns legal guardians or parents"""
+        guardians = DAList(object_type=Individual, auto_gather=False,gathered=True)
+        for person in self.elements:
+            if person.relationship.lower() in ['guardian','father','mother',
+                'legal guardian','step father','step mother','stepparent','step parent']:
+                guardians.append(person)
+        return guardians
+
+    
