@@ -389,6 +389,7 @@ function storeVariablesAndRedirect(event) {
     vars = {
       'ls_variables': ls_variables
     };
+    params.append('interactive', false);
     params.append('variables', vars);
     params.append('redis_key', event.target.redis_key);
     params.append('secret', session_secret);
