@@ -15,6 +15,8 @@ modules:
 mandatory: True
 objects:
   - client: Individual
+  - spouse: Individual
+  - children: DAList
   - advocate: Individual
   - pbadvocate: Individual
   - initiator: Individual
@@ -22,11 +24,19 @@ objects:
   - income: IncomeList.using(auto_gather=False,gathered=True)
   - adverse_parties: DAList.using(object_type=Person,auto_gather=False,gathered=True)
 ---
+code: |
+  spouse = household.spouse
+  children = household.children
+---
+code: |
+  redis_secret = url_args.get('redis_secret')  
+  redis_key = url_args.get('redis_key')
+---
 comment: |
   If this is not a separate objects block, it will create an error condition.
 objects:
   - ls_fields: |
-      LegalServerFields.using(url_args=url_args,client=client,advocate=advocate,
+      LegalServerFields.using(redis_secret=redis_secret,redis_key=redis_key,client=client,advocate=advocate,
         pbadvocate=pbadvocate,initiator=initiator,adverse_parties=adverse_parties,
         income=income,household=household)
 ---
