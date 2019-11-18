@@ -131,6 +131,8 @@ class LegalServerFields(DADict):
       if self.elements.get('language', '') == 'Chinese':
         client.language = 'zo'
     client.gender = self.elements.get('gender', '').lower()
+    if self.elements.get('prefix_saluation'):
+      client.preferred_salutation = self.elements.get('prefix_saluation')
 
   def load_advocate(self, advocate):
     """Loads up the Individual object (e.g., advocate) with fields from Legal Server. Fills in name and email address attributes"""
