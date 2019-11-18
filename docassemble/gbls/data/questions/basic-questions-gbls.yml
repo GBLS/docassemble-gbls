@@ -44,6 +44,11 @@ mandatory: True
 code: |
   ls_fields
 ---
+mandatory: True
+code: |
+  if defined('ls_fields["court_case_number"]'):
+    court_case_number = ls_fields["court_case_number"]  
+---
 generic object: Individual
 question: |
   ${capitalize(x.object_possessive('name'))}
@@ -69,6 +74,21 @@ fields:
   - zip: x.address.zip
   - county: x.address.county
     required: False
+---
+generic object: Individual
+question: |
+  ${capitalize(x.possessive('address'))}
+fields:
+  - address: x.address.address
+    address autocomplete: True
+  - unit: x.address.unit
+    required: False
+  - city: x.address.city
+  - state: x.address.state
+    code: |
+      states_list()
+    default: "MA"
+  - zip: x.address.zip
 ---
 question: |
   Who is the ${ordinal(i)} adverse party?
@@ -100,3 +120,9 @@ code: |
 generic object: Individual
 code: |
   x.program = ''
+
+---
+question: |
+  What is the case number/docket number for this case?
+fields:
+  - no label: court_case_number

@@ -49,7 +49,7 @@ class HouseholdList(DAList):
         related = DAList(object_type=Individual, auto_gather=False,gathered=True)
         for person in self.elements:
             if isinstance(relationships, list):
-                if person.relationship.lower() in ['sibling','brother','sister','step sister','step brother','stepsister','stepbrother','half brother','half sister','half sibling','foster brother','foster sister','foster sibling']:
+                if person.relationship.lower() in relationships:
                     related.append(person)
             else:
                 if person.relationship.lower() == relationships:
