@@ -225,22 +225,23 @@ function getCleanArgs() {
     }
     for (var j = 0; j < datatables.length; j++) {
       label = tables_match_labels ? section_heads[j].innerText : datatables[j].id;
-
-      var cols = datatables[j].getElementsByTagName('th');
-      var body = datatables[j].getElementsByTagName('tbody')[2]; // contains content
-      if (body) {
-        var table = Array();
-        rows = body.getElementsByTagName('tr');
-        for (var k = 0; k < rows.length; k++) {
-          var new_row = {};
-          var cells = rows[k].getElementsByTagName('td');
-          for (var l = 0; l < cells.length; l++) {
-            clean_heading = cols[l].textContent.replace(/[^\x00-\x7F]/g, ""); // remove non-ascii chars
-            new_row[clean_heading] = cells[l].textContent;
+      if (tables_match_labels) { // skip unlabeled datatables, they're not really usable
+        var cols = datatables[j].getElementsByTagName('th');
+        var body = datatables[j].getElementsByTagName('tbody')[2]; // contains content
+        if (body) {
+          var table = Array();
+          rows = body.getElementsByTagName('tr');
+          for (var k = 0; k < rows.length; k++) {
+            var new_row = {};
+            var cells = rows[k].getElementsByTagName('td');
+            for (var l = 0; l < cells.length; l++) {
+              clean_heading = cols[l].textContent.replace(/[^\x00-\x7F]/g, ""); // remove non-ascii chars
+              new_row[clean_heading] = cells[l].textContent;
+            }
+            table.push(new_row);
           }
-          table.push(new_row);
+          args[label] = table;
         }
-        args[label] = table;
       }
     }
   }
@@ -330,13 +331,13 @@ function loadInterviews(divTitle, secret, uuid, tags = [], useEveryoneTag = true
         var cell = row.insertCell(0);
         //mydiv.appendChild(li);
         var aTag = document.createElement('a');
-        aTag.setAttribute('href', interview['link'] + '&secret=' + secret + '&redis_key=' + uuid + '&new_session=1');
+        aTag.setAttribute('href', interview['link'] + '&redis_secret=' + secret + '&redis_key=' + uuid + '&new_session=1');
         aTag.innerHTML = interview['title'];
         aTag.target = "_blank";
         aTag.classList.add('docassembleLink');
-        aTag.addEventListener(storeVariablesAndRedirect); // set the link to store LS variables before redirecting
-        aTag.secret = secret;
-        aTag.redis_key = guid;
+        aTag.addEventListener('click',storeVariablesAndRedirect); // set the link to store LS variables before redirecting
+        aTag.redis_secret = secret;
+        aTag.redis_key = uuid;
         cell.appendChild(aTag);
         var tag_cell = row.insertCell();
         tag_cell.innerHTML = interview['tags'].join();
@@ -367,10 +368,10 @@ function storeVariablesAndRedirect(event) {
   const da_api_url = document.getElementById('da_api_url').value;
   const da_api_key = document.getElementById('da_api_key').value;
   const parsed_url = parseUri(da_api_url);
-  const api_url = parsed_url.protocol + '://' + parsed_url.host; + '/api/';
-  const interview = "docassemble.gbls:save_secret.yml";
-  const new_session_url = api_url + 'session/new' + "?key=" + da_api_key + "&i=" + interview;
-  const save_secret_url = api_url + 'session';
+  const api_url = parsed_url.protocol + '://' + parsed_url.host + '/api';
+  const interview = "docassemble.gbls:save_secret.yml"; 
+  const new_session_url = api_url + '/session/new' + "?key=" + da_api_key + "&i=" + interview;
+  const save_secret_url = api_url + '/session';
   
   // var redis_key = create_UUID();
   // var secret = generateSecret(16);
@@ -380,20 +381,21 @@ function storeVariablesAndRedirect(event) {
   x.responseType = "json";
   x.send();
   x.onload = function() { // after we finish creating a new session
-    res = JSON.parse(this.response);
-    session_secret = res['secret']; // secret to access the new session
+    // res = JSON.parse(this.response);
+    res = x.response;
+    session_secret = res['secret']; // secret to access the new session 
     var params = new FormData();
     params.append('key', da_api_key);
     params.append('i', interview);
     params.append('session',res['session'])
     vars = {
-      'ls_variables': ls_variables
+      'ls_variables': ls_variables,
+      'redis_secret': event.target.redis_secret,
+      'redis_key': event.target.redis_key,
+      'activated': true,
     };
-    params.append('interactive', false);
-    params.append('variables', vars);
-    params.append('redis_key', event.target.redis_key);
+    params.append('variables', JSON.stringify(vars));
     params.append('secret', session_secret);
-    params.append('redis_secret',event.target.redis_secret);
   
     x.open('POST', save_secret_url);
     x.send(params);
