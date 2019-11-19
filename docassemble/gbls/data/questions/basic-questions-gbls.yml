@@ -120,7 +120,6 @@ code: |
 generic object: Individual
 code: |
   x.program = ''
-
 ---
 question: |
   What is the case number/docket number for this case?
