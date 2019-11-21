@@ -213,7 +213,7 @@ class LegalServerFields(DADict):
   def load_adverse_parties(self, adverse_parties):
     """Try to set the provided object to the corresponding Legal Server listview"""
     adverse_list = self.elements.get('Adverse Parties')
-    if not adverse_parties:
+    if not adverse_list:
       return self.fallback_load_adverse_parties(adverse_parties)
     for person in adverse_list:
       ap = adverse_parties.appendObject()  # Person()

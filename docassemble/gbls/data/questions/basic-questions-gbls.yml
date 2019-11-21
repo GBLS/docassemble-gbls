@@ -19,7 +19,6 @@ objects:
   - children: DAList
   - advocate: Individual
   - pbadvocate: Individual
-  - initiator: Individual
   - household: HouseholdList.using(auto_gather=False,gathered=True)
   - income: IncomeList.using(auto_gather=False,gathered=True)
   - adverse_parties: DAList.using(object_type=Person,auto_gather=False,gathered=True)
