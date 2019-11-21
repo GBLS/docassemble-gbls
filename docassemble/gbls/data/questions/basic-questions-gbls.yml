@@ -12,13 +12,14 @@ modules:
   - docassemble.gbls.household
   - docassemble.income.income
 ---
-mandatory: True
+#mandatory: True
 objects:
   - client: Individual
   - spouse: Individual
   - children: DAList
   - advocate: Individual
   - pbadvocate: Individual
+  - initiator: Individual
   - household: HouseholdList.using(auto_gather=False,gathered=True)
   - income: IncomeList.using(auto_gather=False,gathered=True)
   - adverse_parties: DAList.using(object_type=Person,auto_gather=False,gathered=True)
