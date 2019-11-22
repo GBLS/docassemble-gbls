@@ -11,8 +11,9 @@ class HouseholdList(DAList):
     @property
     def spouse(self):
         for person in self.elements:
-            if person.relationship.lower() in ['spouse','husband', 'wife','partner','unmarried partner','spouse/domestic partner']:
-                return person
+            if hasattr(person,'relationship'):
+                if person.relationship.lower() in ['spouse','husband', 'wife','partner','unmarried partner','spouse/domestic partner']:
+                    return person
         return DAEmpty()
     
     @property
@@ -48,10 +49,11 @@ class HouseholdList(DAList):
         """Return a list of household memberships with the specified relationship attribute. Relationship may be a string or list of strings."""
         related = DAList(object_type=Individual, auto_gather=False,gathered=True)
         for person in self.elements:
-            if isinstance(relationships, list):
-                if person.relationship.lower() in relationships:
-                    related.append(person)
-            else:
-                if person.relationship.lower() == relationships:
-                    related.append(person)
+            if hasattr(person,'relationship'):
+                if isinstance(relationships, list):
+                    if person.relationship.lower() in relationships:
+                        related.append(person)
+                else:
+                    if person.relationship.lower() == relationships:
+                        related.append(person)
         return related 
