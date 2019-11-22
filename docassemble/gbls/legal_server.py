@@ -32,8 +32,11 @@ class LegalServerFields(DADict):
     # and self.ls_variables.get('args', False):
 
     if hasattr(self, 'redis_secret') and not (self.redis_secret is None) and hasattr(self,'redis_key') and not (self.redis_key is None):
-      ls_variables = restore_ls_fields(self.redis_secret,self.redis_key)
-      self.initialize(ls_variables)
+      try: 
+        ls_variables = restore_ls_fields(self.redis_secret,self.redis_key)
+        self.initialize(ls_variables)
+      except:
+        self.empty_args = True
     else:
       self.empty_args = True
 
@@ -228,9 +231,7 @@ class LegalServerFields(DADict):
         self.parse_address(person.get(
           'Adverse Party Address'), ap.address)
       except:
-        ap.address.address = person.get('Adverse Party Address')
-        ap.address.geolocate(person.get('Adverse Party Address'))
-      # adverse_parties.add(ap)
+        pass
 
   def load_income(self, income):
     """Load income from the Financial Information listview"""
