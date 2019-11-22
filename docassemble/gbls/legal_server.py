@@ -218,8 +218,11 @@ class LegalServerFields(DADict):
     for person in adverse_list:
       ap = adverse_parties.appendObject()  # Person()
       ap.name.text = person.get('Adverse Party Name')
-      ap.birthdate = as_datetime(person.get('Date of Birth')) if not person.get(
-        'Date of Birth') == 'N/A' else None
+      try:
+        ap.birthdate = as_datetime(person.get('Date of Birth', '')) if person.get('Date of Birth') and not person.get(
+          'Date of Birth') == 'N/A' else None
+      except:
+        pass
       ap.gender = person.get('Gender').lower() if not person.get(
         'Gender') == 'N/A' else None
       ap.race = person.get('Race') if not person.get(
