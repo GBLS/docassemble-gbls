@@ -220,14 +220,11 @@ class LegalServerFields(DADict):
       ap.name.text = person.get('Adverse Party Name')
       try:
         ap.birthdate = as_datetime(person.get('Date of Birth', '')) if person.get('Date of Birth') and not person.get(
-          'Date of Birth') == 'N/A' else None
-      except:
-        pass
-      ap.gender = person.get('Gender').lower() if not person.get(
-        'Gender') == 'N/A' else None
-      ap.race = person.get('Race') if not person.get(
-        'Race') == 'N/A' else None
-      try:
+          'Date of Birth') == 'N/A' else None      
+        ap.gender = person.get('Gender').lower() if not person.get(
+          'Gender') == 'N/A' else None
+        ap.race = person.get('Race') if not person.get(
+          'Race') == 'N/A' else None
         self.parse_address(person.get(
           'Adverse Party Address'), ap.address)
       except:
