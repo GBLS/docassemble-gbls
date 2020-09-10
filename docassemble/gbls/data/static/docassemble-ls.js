@@ -280,7 +280,11 @@ function _loadInterviews(divTitle, variableJSON, tags = [], useEveryoneTag = tru
         var cell = row.insertCell(0);
         //mydiv.appendChild(li);
         var aTag = document.createElement('a');
-        aTag.setAttribute('href', interview['link'] + '&args=' + variableJSON + '&new_session=1');
+        if (interview['link'].includes("?")) {
+          aTag.setAttribute('href', interview['link'] + '&args=' + variableJSON + '&new_session=1');
+        } else if (interview['link'].endsWith("/") ) {
+          aTag.setAttribute('href', interview['link'] + '?args=' + variableJSON + '&new_session=1');
+        }
         aTag.innerHTML = interview['title'];
         aTag.target = "_blank";
         cell.appendChild(aTag);
