@@ -336,9 +336,9 @@ function loadInterviews(divTitle, secret, uuid, tags = [], useEveryoneTag = true
         //mydiv.appendChild(li);
         var aTag = document.createElement('a');
         if (interview['link'].includes("?")) {
-          aTag.setAttribute('href', interview['link'] + '&args=' + variableJSON + '&new_session=1');
+          aTag.setAttribute('href', interview['link'] + '?redis_secret=' + secret + '&redis_key=' + uuid + '&new_session=1');
         } else if (interview['link'].endsWith("/") ) {
-          aTag.setAttribute('href', interview['link'] + '?args=' + variableJSON + '&new_session=1');
+          aTag.setAttribute('href', interview['link'] + '?redis_secret=' + secret + '&redis_key=' + uuid + '&new_session=1');
         }        
         aTag.innerHTML = interview['title'];
         aTag.target = "_blank";
