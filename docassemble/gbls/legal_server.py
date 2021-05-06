@@ -112,7 +112,7 @@ class LegalServerFields(DADict):
             'We expected a Street Address. Fall back to Google Geolocation')
       except:
         client.address.address = self.elements.get('full_address', '')
-        client.address.geolocate(self.elements.get('full_address', ''))
+        client.address.geocode(self.elements.get('full_address', ''))
     except:
       pass
     if self.elements.get('date_of_birth', False):
@@ -164,11 +164,16 @@ class LegalServerFields(DADict):
       initiator.name.suffix = self.initiator_name_parts['suffix']
       initiator.program = self.elements.get(
         'sidebar_assignment_program', '')
-      initiator.email = self.elements.get(
-        'initiating_user_email_address', '')
     except:
       pass
-
+    
+    try:
+      email = parseaddr(self.elements.get(
+        'initiating_user_email_address'))
+      initiator.email = email[1]
+    except:
+      initiator.email = self.elements.get('initiating_user_email_address', '')
+      
   def load_pbadvocate(self, pbadvocate):
     """Loads up the Individual objection (e.g., pbadvocate) with fields from Legal Server. Fills in name, firm, address, phone, and email attributes"""
     if self.elements.get('pro_bono_attorney_s_name', False):
@@ -210,7 +215,7 @@ class LegalServerFields(DADict):
       except:
         pbadvocate.address.address = self.elements.get(
           'pro_bono_attorney_s_address', '')
-        pbadvocate.address.geolocate(
+        pbadvocate.address.geocode(
           self.elements.get('pro_bono_attorney_s_address', ''))
 
   def load_adverse_parties(self, adverse_parties):
