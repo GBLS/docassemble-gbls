@@ -112,7 +112,7 @@ class LegalServerFields(DADict):
             'We expected a Street Address. Fall back to Google Geolocation')
       except:
         client.address.address = self.elements.get('full_address', '')
-        client.address.geolocate(self.elements.get('full_address', ''))
+        client.address.geocode(self.elements.get('full_address', ''))
     except:
       pass
     if self.elements.get('date_of_birth', False):
@@ -215,7 +215,7 @@ class LegalServerFields(DADict):
       except:
         pbadvocate.address.address = self.elements.get(
           'pro_bono_attorney_s_address', '')
-        pbadvocate.address.geolocate(
+        pbadvocate.address.geocode(
           self.elements.get('pro_bono_attorney_s_address', ''))
 
   def load_adverse_parties(self, adverse_parties):
