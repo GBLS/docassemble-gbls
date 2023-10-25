@@ -3,29 +3,51 @@ comment: |
   This YML file works with legal_server.py to help you make use of JSON data sent
   from Legal Server (using Jonathan Pyle's instruction block trick)
   
-  It also defines three objects: client, advocate, and adverse_parties. If the 
+  It also defines seven objects: client, advocate, household, adverse_parties, pbadvocate, income, and initiator. If the 
   interview was not called from Legal Server, fallback questions are provided.
 ---
 modules:
   - docassemble.base.util
   - docassemble.gbls.legal_server
+  - docassemble.gbls.household
+  - docassemble.income.income
 ---
-mandatory: True
+#mandatory: True
 objects:
   - client: Individual
+  - spouse: Individual
+  - children: DAList
   - advocate: Individual
   - pbadvocate: Individual
   - initiator: Individual
+  - household: HouseholdList.using(auto_gather=False,gathered=True)
+  - income: IncomeList.using(auto_gather=False,gathered=True)
   - adverse_parties: DAList.using(object_type=Person,auto_gather=False,gathered=True)
+---
+code: |
+  spouse = household.spouse
+  children = household.children
+---
+code: |
+  redis_secret = url_args.get('redis_secret')  
+  redis_key = url_args.get('redis_key')
 ---
 comment: |
   If this is not a separate objects block, it will create an error condition.
 objects:
-  - ls_fields: LegalServerFields.using(url_args=url_args,client=client,advocate=advocate,pbadvocate=pbadvocate,initiator=initiator,adverse_parties=adverse_parties)
+  - ls_fields: |
+      LegalServerFields.using(redis_secret=redis_secret,redis_key=redis_key,client=client,advocate=advocate,
+        pbadvocate=pbadvocate,initiator=initiator,adverse_parties=adverse_parties,
+        income=income,household=household)
 ---
 mandatory: True
 code: |
   ls_fields
+---
+mandatory: True
+code: |
+  if defined('ls_fields["court_case_number"]'):
+    court_case_number = ls_fields["court_case_number"]  
 ---
 generic object: Individual
 question: |
@@ -52,6 +74,21 @@ fields:
   - zip: x.address.zip
   - county: x.address.county
     required: False
+---
+generic object: Individual
+question: |
+  ${capitalize(x.possessive('address'))}
+fields:
+  - address: x.address.address
+    address autocomplete: True
+  - unit: x.address.unit
+    required: False
+  - city: x.address.city
+  - state: x.address.state
+    code: |
+      states_list()
+    default: "MA"
+  - zip: x.address.zip
 ---
 question: |
   Who is the ${ordinal(i)} adverse party?
@@ -83,3 +120,8 @@ code: |
 generic object: Individual
 code: |
   x.program = ''
+---
+question: |
+  What is the case number/docket number for this case?
+fields:
+  - no label: court_case_number

@@ -66,6 +66,18 @@ You will see a new block on the page with the same interviews that you see when 
     </div>
 </div>
 ```
+# Sending fields to Docassemble without displaying in Legal Server
+You can create a whole tab block of fields that won't display in Legal Server but are still available to Docassemble,
+by creating an instruction with the contents:
+```
+<div id="docassemble-fields"></div>
+```
+Somewhere in the tab block that you want to hide.
+
+# Listviews
+As of version .30, this module supports Legal Server Listviews. 
+Please check the ListView option "Show list title" in order to get labeled data into Docassemble. Every listview
+in the form section needs to be labeled for the module to be able to guess which label corresponds to which list view.
 
 # Filtering
 
